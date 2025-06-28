@@ -1,43 +1,50 @@
 import React, { useState } from 'react';
 import { MessageCircle, Users, Settings, LogOut, X, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { useAuthStore } from '../../stores/authStore';
 
 interface SidebarProps {
-  activeView: 'chat' | 'contacts' | 'profile';
-  onViewChange: (view: 'chat' | 'contacts' | 'profile') => void;
   isMobile?: boolean;
   onClose?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
-  activeView, 
-  onViewChange, 
   isMobile = false,
   onClose 
 }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { profile, signOut, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
   };
 
-  const handleViewChange = (view: 'chat' | 'contacts' | 'profile') => {
-    onViewChange(view);
+  const handleNavigation = (path: string) => {
+    navigate(path);
     if (isMobile && onClose) {
       onClose();
     }
   };
 
+  const getActiveView = () => {
+    if (location.pathname.startsWith('/contacts')) return 'contacts';
+    if (location.pathname.startsWith('/profile')) return 'profile';
+    return 'chat';
+  };
+
   const navigationItems = [
-    { id: 'chat', label: 'Messages', icon: MessageCircle },
-    { id: 'contacts', label: 'Contacts', icon: Users },
-    { id: 'profile', label: 'Profile', icon: Settings },
+    { id: 'chat', label: 'Messages', icon: MessageCircle, path: '/' },
+    { id: 'contacts', label: 'Contacts', icon: Users, path: '/contacts' },
+    { id: 'profile', label: 'Profile', icon: Settings, path: '/profile' },
   ];
+
+  const activeView = getActiveView();
 
   return (
     <div className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full ${isMobile ? 'w-80' : 'w-72'}`}>
@@ -49,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <MessageCircle className="w-5 h-5 text-white" />
             </div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              ChatFlow
+              PerkChat
             </h1>
           </div>
           
@@ -72,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="flex items-center space-x-3 cursor-pointer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => handleViewChange('profile')}
+          onClick={() => handleNavigation('/profile')}
         >
           <Avatar
             src={profile?.avatar_url}
@@ -98,7 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navigationItems.map((item) => (
             <motion.button
               key={item.id}
-              onClick={() => handleViewChange(item.id as any)}
+              onClick={() => handleNavigation(item.path)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${

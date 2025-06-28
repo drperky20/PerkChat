@@ -12,6 +12,7 @@ import {
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { useCallStore } from '../../stores/callStore';
+import { useAuthStore } from '../../stores/authStore';
 
 export const CallInterface: React.FC = () => {
   const {
@@ -67,11 +68,12 @@ export const CallInterface: React.FC = () => {
     }
   };
 
+  const { user } = useAuthStore();
+
   const getContactInfo = () => {
     if (!currentCall) return null;
     
     // Determine if current user is caller or recipient
-    const { data: { user } } = useCallStore.getState() as any;
     const isUserCaller = currentCall.caller_id === user?.id;
     
     return isUserCaller ? currentCall.recipient_profile : currentCall.caller_profile;
@@ -87,6 +89,7 @@ export const CallInterface: React.FC = () => {
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 100 }}
+        data-testid="call-interface"
         className={`fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl transition-all duration-300 ${
           isMinimized 
             ? 'bottom-4 right-4 w-80' 
@@ -159,6 +162,7 @@ export const CallInterface: React.FC = () => {
                 size={isMinimized ? 'sm' : 'md'}
                 className={`rounded-full ${isMinimized ? 'w-10 h-10' : 'w-12 h-12'} p-0`}
                 title={isMuted ? 'Unmute' : 'Mute'}
+                data-testid="mute-button"
               >
                 {isMuted ? (
                   <MicOff className={`${isMinimized ? 'w-4 h-4' : 'w-5 h-5'}`} />
@@ -179,6 +183,7 @@ export const CallInterface: React.FC = () => {
                 size={isMinimized ? 'sm' : 'md'}
                 className={`rounded-full ${isMinimized ? 'w-10 h-10' : 'w-12 h-12'} p-0 bg-red-600 hover:bg-red-700`}
                 title="End call"
+                data-testid="end-call-button"
               >
                 <PhoneOff className={`${isMinimized ? 'w-4 h-4' : 'w-5 h-5'}`} />
               </Button>

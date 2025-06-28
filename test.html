@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PerkChat Voice Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        #status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>PerkChat Voice Chat Test</h1>
+    
+    <div class="test-section">
+        <h2>Microphone Permission Test</h2>
+        <button onclick="testMicrophone()">Test Microphone Access</button>
+        <div id="micStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>WebRTC Support Test</h2>
+        <button onclick="testWebRTC()">Test WebRTC Support</button>
+        <div id="webrtcStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Supabase Connection Test</h2>
+        <button onclick="testSupabase()">Test Supabase Connection</button>
+        <div id="supabaseStatus"></div>
+    </div>
+    
+    <div id="status"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
+
+        // Test microphone access
+        window.testMicrophone = async () => {
+            const statusDiv = document.getElementById('micStatus');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                statusDiv.innerHTML = '<span class="success">✓ Microphone access granted</span>';
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ Microphone access denied: ${error.message}</span>`;
+            }
+        };
+
+        // Test WebRTC support
+        window.testWebRTC = () => {
+            const statusDiv = document.getElementById('webrtcStatus');
+            try {
+                const pc = new RTCPeerConnection();
+                statusDiv.innerHTML = '<span class="success">✓ WebRTC is supported</span>';
+                pc.close();
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ WebRTC not supported: ${error.message}</span>`;
+            }
+        };
+
+        // Test Supabase connection
+        window.testSupabase = async () => {
+            const statusDiv = document.getElementById('supabaseStatus');
+            try {
+                // Use placeholder values for testing
+                const supabase = createClient(
+                    'https://placeholder.supabase.co',
+                    'placeholder-key'
+                );
+                statusDiv.innerHTML = '<span class="success">✓ Supabase client created successfully</span>';
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">✗ Supabase error: ${error.message}</span>`;
+            }
+        };
+
+        // Auto-run tests
+        document.addEventListener('DOMContentLoaded', () => {
+            testWebRTC();
+        });
+    </script>
+</body>
+</html> 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useAuthStore } from '../../stores/authStore';
@@ -12,8 +13,8 @@ interface LoginFormData {
 }
 
 interface LoginFormProps {
-  onSwitchToSignup: () => void;
-  onSwitchToReset: () => void;
+  onSwitchToSignup?: () => void;
+  onSwitchToReset?: () => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({
@@ -22,6 +23,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, isLoading } = useAuthStore();
+  const navigate = useNavigate();
   
   const {
     register,
@@ -40,9 +42,27 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     try {
       console.log('Form data:', data); // Debug log
       await signIn(data.email, data.password);
+      // Navigate to main page after successful login
+      navigate('/', { replace: true });
     } catch (error: any) {
       console.error('Login error:', error); // Debug log
       setError('root', { message: error.message });
+    }
+  };
+
+  const handleSwitchToSignup = () => {
+    if (onSwitchToSignup) {
+      onSwitchToSignup();
+    } else {
+      navigate('/signup');
+    }
+  };
+
+  const handleSwitchToReset = () => {
+    if (onSwitchToReset) {
+      onSwitchToReset();
+    } else {
+      navigate('/reset-password');
     }
   };
 
@@ -123,7 +143,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <div className="mt-6 text-center space-y-4">
           <button
             type="button"
-            onClick={onSwitchToReset}
+            onClick={handleSwitchToReset}
             className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium transition-colors"
           >
             Forgot your password?
@@ -134,7 +154,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               Don't have an account?{' '}
               <button
                 type="button"
-                onClick={onSwitchToSignup}
+                onClick={handleSwitchToSignup}
                 className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium transition-colors"
               >
                 Sign up

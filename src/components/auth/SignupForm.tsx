@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useAuthStore } from '../../stores/authStore';
@@ -14,13 +15,14 @@ interface SignupFormData {
 }
 
 interface SignupFormProps {
-  onSwitchToLogin: () => void;
+  onSwitchToLogin?: () => void;
 }
 
 export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signUp, isLoading } = useAuthStore();
+  const navigate = useNavigate();
   
   const {
     register,
@@ -44,9 +46,19 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     try {
       console.log('Signup form data:', data); // Debug log
       await signUp(data.email, data.password, data.username);
+      // The auth store handles the navigation logic based on email confirmation
+      // If user is immediately confirmed, they will be redirected to main page
     } catch (error: any) {
       console.error('Signup error:', error); // Debug log
       setError('root', { message: error.message });
+    }
+  };
+
+  const handleSwitchToLogin = () => {
+    if (onSwitchToLogin) {
+      onSwitchToLogin();
+    } else {
+      navigate('/login');
     }
   };
 
@@ -181,7 +193,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
               Already have an account?{' '}
               <button
                 type="button"
-                onClick={onSwitchToLogin}
+                onClick={handleSwitchToLogin}
                 className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium transition-colors"
               >
                 Sign in

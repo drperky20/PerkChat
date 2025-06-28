@@ -14,6 +14,7 @@ export class WebRTCManager {
   private targetUserId: string;
   private onRemoteStream?: (stream: MediaStream) => void;
   private onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+  private signalingChannel: any = null;
 
   private rtcConfiguration: RTCConfiguration = {
     iceServers: [
@@ -193,7 +194,7 @@ export class WebRTCManager {
 
   private setupSignalingListener(): void {
     // Listen for WebRTC signals on a user-specific channel
-    const channel = supabase.channel(`call-signals-${this.userId}`)
+    this.signalingChannel = supabase.channel(`call-signals-${this.userId}`)
       .on('broadcast', { event: 'webrtc-signal' }, async (payload) => {
         const signal = payload.payload;
         
@@ -257,7 +258,10 @@ export class WebRTCManager {
     }
 
     // Unsubscribe from signaling channel
-    supabase.removeAllChannels();
+    if (this.signalingChannel) {
+      this.signalingChannel.unsubscribe();
+      this.signalingChannel = null;
+    }
   }
 
   getLocalStream(): MediaStream | null {

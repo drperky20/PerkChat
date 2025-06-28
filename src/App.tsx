@@ -8,6 +8,8 @@ import { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 import { useAuthStore } from './stores/authStore';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ChatView } from './components/chat/ChatView';
+import { ContactList } from './components/contacts/ContactList';
+import { ProfileSettings } from './components/profile/ProfileSettings';
 import { CallNotification } from './components/chat/CallNotification';
 import { CallInterface } from './components/chat/CallInterface';
 
@@ -61,6 +63,8 @@ function App() {
           >
             <Route index element={<ChatPlaceholder />} />
             <Route path="conversation/:conversationId" element={<ChatView />} />
+            <Route path="contacts" element={<ContactList />} />
+            <Route path="profile" element={<ProfileSettings />} />
           </Route>
         </Routes>
       </ErrorBoundary>
