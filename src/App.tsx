@@ -8,6 +8,8 @@ import { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 import { useAuthStore } from './stores/authStore';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ChatView } from './components/chat/ChatView';
+import { CallNotification } from './components/chat/CallNotification';
+import { CallInterface } from './components/chat/CallInterface';
 
 const AppLayout = () => (
   <MainLayout>
@@ -42,6 +44,13 @@ function App() {
     <Router>
       <ErrorBoundary>
         <Toaster position="bottom-right" />
+        {/* Global Call Components */}
+        {user && (
+          <>
+            <CallNotification />
+            <CallInterface />
+          </>
+        )}
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignupForm />} />

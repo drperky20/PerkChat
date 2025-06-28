@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, Users, UserX, Clock, MessageCircle } from 'lucide-react';
+import { Search, UserPlus, Users, UserX, Clock, MessageCircle, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -7,6 +7,7 @@ import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
 import { useContactStore } from '../../stores/contactStore';
 import { useChatStore } from '../../stores/chatStore';
+import { useCallStore } from '../../stores/callStore';
 
 export const ContactList: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'contacts' | 'pending' | 'blocked'>('contacts');
@@ -29,6 +30,7 @@ export const ContactList: React.FC = () => {
   } = useContactStore();
 
   const { createConversation, setActiveConversation } = useChatStore();
+  const { initiateCall, isCallActive } = useCallStore();
 
   React.useEffect(() => {
     fetchContacts();
@@ -55,6 +57,14 @@ export const ContactList: React.FC = () => {
       setActiveConversation(conversationId);
     } catch (error) {
       console.error('Failed to start chat:', error);
+    }
+  };
+
+  const handleStartCall = async (contactId: string) => {
+    try {
+      await initiateCall(contactId);
+    } catch (error) {
+      console.error('Failed to start call:', error);
     }
   };
 
@@ -222,6 +232,16 @@ export const ContactList: React.FC = () => {
                           title="Start chat"
                         >
                           <MessageCircle className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStartCall(contact.contact_id)}
+                          title="Voice call"
+                          disabled={isCallActive}
+                          className={`${isCallActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <Phone className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"

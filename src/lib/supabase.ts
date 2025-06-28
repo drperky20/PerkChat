@@ -135,6 +135,35 @@ export type Database = {
           updated_at?: string;
         };
       };
+      call_sessions: {
+        Row: {
+          id: string;
+          caller_id: string;
+          recipient_id: string;
+          conversation_id: string;
+          status: 'initiating' | 'ringing' | 'connected' | 'ended' | 'missed' | 'declined';
+          created_at: string;
+          answered_at?: string;
+          ended_at?: string;
+          duration?: number;
+        };
+        Insert: {
+          caller_id: string;
+          recipient_id: string;
+          conversation_id: string;
+          status?: 'initiating' | 'ringing' | 'connected' | 'ended' | 'missed' | 'declined';
+          created_at?: string;
+          answered_at?: string;
+          ended_at?: string;
+          duration?: number;
+        };
+        Update: {
+          status?: 'initiating' | 'ringing' | 'connected' | 'ended' | 'missed' | 'declined';
+          answered_at?: string;
+          ended_at?: string;
+          duration?: number;
+        };
+      };
     };
   };
 };
